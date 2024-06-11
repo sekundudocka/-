@@ -29,6 +29,7 @@ class Wall:
         self.rect = pygame.Rect(x, y, w, h)
         self.img = pygame.image.load(img)
         self.img = pygame.transform.scale(self.img, (w, h))
+        self.open = False
     def draw(self):
         screen.blit(self.img, (self.rect.x, self.rect.y))
 
@@ -212,9 +213,7 @@ while True:
                         for cell in range(len(pole2[line])):
                                 walls3.append(Wall(cell * 37, line * 37, 37, 37, 'пусто.png', cell, line))   
                     game_state = 1 
-
-        for wall in walls:
-            wall.draw()       
+     
         pygame.draw.rect(screen, restartColor , restart)
         screen.blit(restartTxT,(175 , 225))
 
@@ -238,13 +237,17 @@ while True:
                             game_state = 'lose'
 
                         else:
-                            sound2.play()
-                            boms = check(pole , wall.row , wall.col)
-                            wall.img = pygame.image.load(str(boms) + '.png')
-                            wall.img = pygame.transform.scale(wall.img, (wall.rect.width, wall.rect.height))
-                            found += 1
-                            if found == 10:                             
-                                game_state = 'win'
+                            if wall.open == False:
+                                    
+                                wall.open = True
+                                sound2.play()
+                                boms = check(pole , wall.row , wall.col)
+                                wall.img = pygame.image.load(str(boms) + '.png')
+                                wall.img = pygame.transform.scale(wall.img, (wall.rect.width, wall.rect.height))
+
+                                found += 1
+                                if found == 10:                             
+                                    game_state = 'win'
 
         for wall in walls:
             wall.draw()
@@ -297,7 +300,7 @@ while True:
                             boms = check(pole2 , wall.row , wall.col)
                             wall.img = pygame.image.load(str(boms) + '.png')
                             wall.img = pygame.transform.scale(wall.img, (wall.rect.width, wall.rect.height))
-                            found += 1
+                            found += 1                                                                                                                                                   
                             if found == 174:
                                 game_state = 'win'
 
