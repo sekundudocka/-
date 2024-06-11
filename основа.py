@@ -11,6 +11,7 @@ Y = 600
 screen = pygame.display.set_mode((X, Y))
 clock = pygame.time.Clock()
 game_state = 1
+sekundi = 0
 
 #классы
 class Any:
@@ -32,6 +33,8 @@ class Wall:
         screen.blit(self.img, (self.rect.x, self.rect.y))
 
 def check(pole , i , j):
+    rows = len(pole)
+    cols = len(pole[0])
     countOfbomb = 0
     for x in range(max(0, i-1), min(rows,i+2)):
         for y in range(max(0, j-1), min(cols,j+2)):
@@ -82,46 +85,46 @@ for line in range(len(pole2)):
     for cell in range(len(pole2[line])):
             walls3.append(Wall(cell * 37, line * 37, 37, 37, 'пусто.png', cell, line))      
 
-rows = len(pole)
-cols = len(pole[0])
+# rows = len(pole)
+# cols = len(pole[0])
 
-rows1 = len(pole1)
-cols1 = len(pole1[0])
+# rows1 = len(pole1)
+# cols1 = len(pole1[0])
 
-rows2 = len(pole2)
-cols2 = len(pole2[0])
+# rows2 = len(pole2)
+# cols2 = len(pole2[0])
 
 # for i in range(rows):
 #     for j in range(cols):
 #         if pole[i][j] != 1:
 #             pole[i][j] = check(pole , i ,  j)
 
-print(pole[0])
-print(pole[1])
-print(pole[2])
-print(pole[3])
-
 #весь текст
 font = pygame.font.Font('mine-sweeper.ttf', 50)
 font2 = pygame.font.Font('mine-sweeper.ttf', 45)
-font3 = pygame.font.Font('mine-sweeper.ttf', 40)
+font3 = pygame.font.Font('mine-sweeper.ttf', 35)
 message1 = font.render('''start''', True ,(0, 0, 0) )
 x4 = font2.render('''4 x 4''', True ,(0, 0, 0) )
 x8 = font2.render('''8 x 8''', True ,(0, 0, 0) )
 x16 = font3.render('''16 x 16''', True ,(0, 0, 0) )
+x16 = pygame.transform.scale(x16 , (190 , 60))
 win = font2.render('''you win!!!''', True ,(0, 0, 0) )
+restartTxT = font.render('''restart?''' , True , (0,0,0) )
+restartTxT = pygame.transform.scale(restartTxT , (250 , 150))
 
 #кнопки
 button = pygame.Rect(150, 150, 300 , 100)
 hard1 = pygame.Rect(200, 150 , 200 , 100)#сложность 4 х 4
 hard2 = pygame.Rect(200, 300 , 200 , 100)#сложность 8 х 8
 hard3 = pygame.Rect(200, 450 , 200 , 100)#сложность 16 х 16
+restart = pygame.Rect(150 , 225 , 300 , 150)
 
 #цвета
 buttonColor = (100, 100 , 100)
 hardColor1 = (100 , 100 , 100)
 hardColor2 = (255 , 255 , 255)
 hardColor3 = (50 , 50 , 50)
+restartColor = (148 , 0 , 211)
 
 fon = Any(0 , 0 , 600 , 6000 , 'поле.jpg')
 pos1 = Any(0 , 0 , 100 , 100 , 'bomb.png')
@@ -186,11 +189,37 @@ while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 sys.exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                x , y = event.pos
+                if 150 < x < 450 and 225 < y < 375:
+                    pole = generatePole(4 , 4 , 6)
+                    pole1 = generatePole(8 , 8 , 28)
+                    pole2 = generatePole(16 , 16 , 84)
 
-        for Wall in walls:
-            Wall.draw()       
-        time.sleep(3)
-        sys.exit()
+                    walls = []
+                    walls2 = [] 
+                    walls3 = []
+
+                    for line in range(len(pole)):
+                        for cell in range(len(pole[line])):
+                                walls.append(Wall(cell * 150, line * 150, 150, 150, 'пусто.png', cell, line))
+
+                    for line in range(len(pole1)):
+                        for cell in range(len(pole1[line])):
+                                walls2.append(Wall(cell * 75, line * 75, 75, 75, 'пусто.png', cell, line))
+
+                    for line in range(len(pole2)):
+                        for cell in range(len(pole2[line])):
+                                walls3.append(Wall(cell * 37, line * 37, 37, 37, 'пусто.png', cell, line))   
+                    game_state = 1 
+
+        for wall in walls:
+            wall.draw()       
+        pygame.draw.rect(screen, restartColor , restart)
+        screen.blit(restartTxT,(175 , 225))
+
+        # time.sleep(3)
+        # sys.exit()
         
     if game_state == 3:
         for event in pygame.event.get():
@@ -217,8 +246,8 @@ while True:
                             if found == 10:                             
                                 game_state = 'win'
 
-        for Wall in walls:
-            Wall.draw()
+        for wall in walls:
+            wall.draw()
 
     if game_state == 4:
         for event in pygame.event.get():
@@ -245,8 +274,8 @@ while True:
                             if found == 36:                              
                                 game_state = 'win'
 
-        for Wall in walls2:
-            Wall.draw()
+        for wall in walls2:
+            wall.draw()
 
     if game_state == 5:
         for event in pygame.event.get():
@@ -272,13 +301,17 @@ while True:
                             if found == 174:
                                 game_state = 'win'
 
-        for Wall in walls3:
-            Wall.draw()
+        for wall in walls3:
+            wall.draw()
 
     if game_state == 'win':
+
+        sekundi += 1
+        if sekundi == 180:
+            sys.exit()           
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                sys.exit()
+                sys.exit()            
         screen.blit(win,(130 , 250))
 
 
